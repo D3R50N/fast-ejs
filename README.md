@@ -1,9 +1,9 @@
-# Fast EJS
+# Fast EJS Builder
 
 ![Fast EJS](logo.png)
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-purple.svg)](https://opensource.org/licenses/MIT)
-[![npm version](https://img.shields.io/npm/v/fast-ejs.svg)](https://www.npmjs.com/package/fast-ejs)
+[![npm version](https://img.shields.io/npm/v/fast-ejs-builder.svg)](https://www.npmjs.com/package/fast-ejs-builder)
 
 A fast and lightweight static site generator that combines EJS templating with Tailwind CSS for rapid web development.
 
@@ -22,13 +22,13 @@ A fast and lightweight static site generator that combines EJS templating with T
 ### Global Installation (Recommended)
 
 ```bash
-npm install -g fast-ejs
+npm install -g fast-ejs-builder
 ```
 
 ### Local Installation
 
 ```bash
-npm install fast-ejs --save-dev
+npm install fast-ejs-builder --save-dev
 ```
 
 ## Quick Start
@@ -92,10 +92,10 @@ npm install fast-ejs --save-dev
 
 ### With local Installation
 
-- Add fast-ejs to your dev dependencies
+- Add fast-ejs-builder to your dev dependencies
 
 ```bash
-npm install fast-ejs --save-dev
+npm install fast-ejs-builder --save-dev
 ```
 
 - Add the build and dev scripts in your `package.json`

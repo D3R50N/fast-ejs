@@ -3,7 +3,7 @@ const { $confirm, $input, $select, $number } = require("./prompter");
 const default_fej = require("../fast.ejs.json");
 const config = {
   ...default_fej,
-  $schema: "http://unpkg.com/fast-ejs/fast.ejs.schema.json",
+  $schema: "http://unpkg.com/fast-ejs-builder/fast.ejs.schema.json",
 };
 
 function getConfigFile() {
