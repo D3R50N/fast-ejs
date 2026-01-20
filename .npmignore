@@ -1,0 +1,23 @@
+# Exclude development dependencies and lock files
+node_modules/
+pnpm-lock.yaml
+
+# Exclude git files
+.git/
+.gitignore
+
+# Exclude development config files
+.htaccess
+
+# Exclude test files (if any)
+test/
+tests/
+
+
+# Exclude IDE files
+.vscode/
+.idea/
+
+# Exclude OS files
+.DS_Store
+Thumbs.db

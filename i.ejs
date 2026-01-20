@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title><%= title %></title>
+    <link rel="stylesheet" href="<%= tailwindCss %>" />
+  </head>
+  <body class="bg-gray-100">
+    <div class="container mx-auto px-4 py-8">
+      <%- include('../components/header') %>
+      <!-- <%- include('../components/header') %> -->
+      <main>
+        <h1 class="text-4xl font-bold text-gray-900 mb-4"><%= title %></h1>
+        <p class="text-lg text-gray-700"><%= description %></p>
+      </main>
+      <%- include('../components/footer') %>
+    </div>
+  </body>
+</html>

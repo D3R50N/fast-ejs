@@ -1,0 +1,93 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "fast-ejs configuration schema",
+  "type": "object",
+  "properties": {
+    "$schema": {
+      "type": "string"
+    },
+    "build": {
+      "properties": {
+        "output": {
+          "default": "build",
+          "description": "The output folder where HTML files will be generated",
+          "type": "string"
+        },
+        "interval": {
+          "default": 100,
+          "description": "Interval in milliseconds between each build",
+          "type": "number"
+        },
+        "useIndexRouting": {
+          "default": true,
+          "description": "Whether if should build route/index.html instead of route.html",
+          "type": "boolean"
+        }
+      },
+      "required": ["output"],
+      "additionalProperties": false
+    },
+
+    "components": {
+      "properties": {
+        "dir": {
+          "default": "app/components",
+          "description": "The folder containing your EJS components",
+          "type": "string"
+        }
+      },
+      "required": ["dir"],
+      "additionalProperties": false
+    },
+    "data": {
+      "properties": {
+        "dir": {
+          "default": "app/data",
+          "description": "The folder containing global and local data files (global.data.js/json, local.data.js/json)",
+          "type": "string"
+        },
+        "allow": {
+          "default": "all",
+          "description": "Specify the data file format to use: 'js' for JavaScript, 'json' for JSON, or 'all' to accept both",
+          "enum": ["js", "json", "all"],
+          "type": "string"
+        }
+      },
+      "required": ["dir"],
+      "additionalProperties": false
+    },
+
+    "pages": {
+      "properties": {
+        "dir": {
+          "default": "app/pages",
+          "description": "The folder containing your EJS templates",
+          "type": "string"
+        }
+      },
+      "required": ["dir"],
+      "additionalProperties": false
+    },
+    "tailwind": {
+      "properties": {
+        "imports": {
+          "default": [],
+          "description": "List of external CSS URLs to include in the Tailwind output",
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "output": {
+          "default": "public/app.css",
+          "description": "Output file of tailwind. Relative to pages directory.",
+          "type": "string"
+        }
+      },
+      "required": ["output"],
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false,
+  "required": ["pages", "build"]
+}

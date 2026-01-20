@@ -1,0 +1,22 @@
+{
+  "$schema": "./fast.ejs.schema.json",
+  "build": {
+    "interval": 100,
+    "output": "build",
+    "useIndexRouting": true
+  },
+  "components": {
+    "dir": "app/components"
+  },
+  "data": {
+    "allow": "all",
+    "dir": "app/data"
+  },
+  "pages": {
+    "dir": "app/pages"
+  },
+  "tailwind": {
+    "imports": [],
+    "output": "public/app.css"
+  }
+}
