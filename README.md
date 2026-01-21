@@ -44,10 +44,9 @@ npm install fast-ejs-builder --save-dev
 
    ```txt
    my-site/
-   ├── app/
-   │   ├── components/     # Reusable EJS components
-   │   ├── data/          # Global and local data files
-   │   └── pages/         # EJS templates
+   ├── components/     # Reusable EJS components
+   ├── data/          # Global and local data files
+   └── pages/         # EJS templates
    │       └── public/            # Static assets
    └── fast.ejs.json      # Configuration file
    ```
@@ -62,14 +61,14 @@ npm install fast-ejs-builder --save-dev
        "useIndexRouting": true
      },
      "components": {
-       "dir": "app/components"
+       "dir": "components"
      },
      "data": {
-       "dir": "app/data",
+       "dir": "data",
        "allow": "all"
      },
      "pages": {
-       "dir": "app/pages"
+       "dir": "pages"
      },
      "tailwind": {
        "output": "public/app.css",
@@ -128,14 +127,14 @@ The `fast.ejs.json` (occasionnally called _the FEJ_) file controls all aspects o
     "useIndexRouting": true
   },
   "components": {
-    "dir": "app/components"
+    "dir": "components"
   },
   "data": {
-    "dir": "app/data",
+    "dir": "data",
     "allow": "all"
   },
   "pages": {
-    "dir": "app/pages"
+    "dir": "pages"
   },
   "tailwind": {
     "output": "public/app.css",
@@ -165,7 +164,7 @@ The `fast.ejs.json` (occasionnally called _the FEJ_) file controls all aspects o
 Create EJS templates in your `pages.dir` directory:
 
 ```ejs
-<!-- app/pages/index.ejs -->
+<!-- pages/index.ejs -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -193,7 +192,7 @@ Create EJS templates in your `pages.dir` directory:
 Create reusable components in your `components.dir`:
 
 ```ejs
-<!-- app/components/header.ejs -->
+<!-- components/header.ejs -->
 <header class="bg-white shadow-sm">
   <nav class="container mx-auto px-4 py-4">
     <div class="flex items-center justify-between">
@@ -243,7 +242,7 @@ Fast EJS comes with default data that can't be overrided.
   In the previous example, we can access `"https://placehold.co/400"` by using `$0` (`0` for the first arg).
 
   ```ejs
-  <!--app/components/users/avatar.ejs-->
+  <!--components/users/avatar.ejs-->
   <img src="<%= $0 %>" class="w-10 aspect-square rounded-full"/>
   ```
 
@@ -258,15 +257,15 @@ Fast EJS comes with default data that can't be overrided.
   Returns the current route relative to the `pages.dir`. In this example, it will return `/home`
 
   ```ejs
-  <!--app/pages/home.ejs-->
+  <!--pages/home.ejs-->
   <%= $route %>
   ```
 
 - `$css` :\
   Automatically imports the relative path of generated tailwind css from `tailwind.output` inside a page. No need to manually write the css path and change everytime.\
   \
-  For example, inside `app/pages/users/profile.ejs`, it can return something like `../../public/app.css`\
-  while inside `app/pages/index.ejs`, it will return something like `./public/app.css`
+  For example, inside `pages/users/profile.ejs`, it can return something like `../../public/app.css`\
+  while inside `pages/index.ejs`, it will return something like `./public/app.css`
 
   ```ejs
   <%- $css %>
@@ -306,7 +305,7 @@ Fast EJS comes with default data that can't be overrided.
   Prints anything in the console during build. Use it to debug your pages or components
 
   ```ejs
-  <!--app/components/header.ejs-->
+  <!--components/header.ejs-->
   <%- $debug("Header component says hi !") %>
   ```
 
@@ -326,7 +325,7 @@ Fill data files in `data.dir` (generated automatically if missing).
 If `data.allow` is `all` or `js` (recommended)
 
 ```javascript
-// app/data/global.data.js
+// data/global.data.js
 module.exports = {
   siteName: "My Awesome Site",
   navItems: [
@@ -342,7 +341,7 @@ module.exports = {
 If `data.allow` is `all` or `json`
 
 ```js
-// app/data/global.data.json
+// data/global.data.json
  {
   "siteName": "My Awesome Site",
   "navItems": [
@@ -356,9 +355,9 @@ If `data.allow` is `all` or `json`
 - **Local data** : Can be accessed only in the target page
 
 ```javascript
-// app/data/local.data.js
+// data/local.data.js
 module.exports = {
-  // for page "app/pages/users/profile.ejs"
+  // for page "pages/users/profile.ejs"
   "users/profile": {
     title: "Welcome to My Site",
     description: "This is a fast-ejs powered website with Tailwind CSS.",

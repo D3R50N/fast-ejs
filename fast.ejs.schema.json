@@ -31,7 +31,7 @@
     "components": {
       "properties": {
         "dir": {
-          "default": "app/components",
+          "default": "components",
           "description": "The folder containing your EJS components",
           "type": "string"
         }
@@ -42,7 +42,7 @@
     "data": {
       "properties": {
         "dir": {
-          "default": "app/data",
+          "default": "data",
           "description": "The folder containing global and local data files (global.data.js/json, local.data.js/json)",
           "type": "string"
         },
@@ -60,7 +60,7 @@
     "pages": {
       "properties": {
         "dir": {
-          "default": "app/pages",
+          "default": "pages",
           "description": "The folder containing your EJS templates",
           "type": "string"
         }

@@ -6,14 +6,14 @@
     "useIndexRouting": true
   },
   "components": {
-    "dir": "app/components"
+    "dir": "components"
   },
   "data": {
     "allow": "all",
-    "dir": "app/data"
+    "dir": "data"
   },
   "pages": {
-    "dir": "app/pages"
+    "dir": "pages"
   },
   "tailwind": {
     "imports": [],
