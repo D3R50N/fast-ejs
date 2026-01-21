@@ -1,6 +1,6 @@
 {
   "name": "fast-ejs-builder",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "Fast-EJS is a simple and fast tool to pre-render EJS templates into static HTML files with clean conventions and flexible data handling.",
   "keywords": [
     "tailwind",
