@@ -18,9 +18,9 @@ async function ejsbuild_dev() {
 
   nodemon({
     watch: toWatch.map(_p),
-    ignore: [],
     delay: config.build.interval,
     ext: "*",
+    exec: "",
   });
 
   nodemon.on("restart", (files) => {
