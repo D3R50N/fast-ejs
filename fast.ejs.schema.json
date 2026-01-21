@@ -34,6 +34,11 @@
           "default": "components",
           "description": "The folder containing your EJS components",
           "type": "string"
+        },
+        "autoGenerate": {
+          "default": false,
+          "description": "Automatically generate missing components when they are referenced",
+          "type": "boolean"
         }
       },
       "required": ["dir"],
@@ -56,7 +61,6 @@
       "required": ["dir"],
       "additionalProperties": false
     },
-
     "pages": {
       "properties": {
         "dir": {

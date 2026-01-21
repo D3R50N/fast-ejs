@@ -6,7 +6,8 @@
     "useIndexRouting": true
   },
   "components": {
-    "dir": "components"
+    "dir": "components", 
+    "autoGenerate": false
   },
   "data": {
     "allow": "all",

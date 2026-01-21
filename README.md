@@ -61,7 +61,8 @@ npm install fast-ejs-builder --save-dev
        "useIndexRouting": true
      },
      "components": {
-       "dir": "components"
+       "dir": "components",
+       "autoGenerate": false
      },
      "data": {
        "dir": "data",
@@ -127,7 +128,8 @@ The `fast.ejs.json` (occasionnally called _the FEJ_) file controls all aspects o
     "useIndexRouting": true
   },
   "components": {
-    "dir": "components"
+    "dir": "components",
+    "autoGenerate": false
   },
   "data": {
     "dir": "data",
@@ -139,6 +141,7 @@ The `fast.ejs.json` (occasionnally called _the FEJ_) file controls all aspects o
   "tailwind": {
     "output": "public/app.css",
     "imports": [
+      "public/style.css",
       "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap"
     ]
   }
@@ -151,6 +154,7 @@ The `fast.ejs.json` (occasionnally called _the FEJ_) file controls all aspects o
 - **`build.interval`**: Milliseconds between rebuilds in development mode
 - **`build.useIndexRouting`**: Generate `route/index.html` instead of `route.html`
 - **`components.dir`**: Directory containing reusable EJS components
+- **`components.autoGenerate`**: Generate missing components. Default is `false`
 - **`data.dir`**: Directory for global and page-specific data files
 - **`data.allow`**: Data file format (`"js"`, `"json"`, or `"all"`)
 - **`pages.dir`**: Directory containing your EJS page templates. **Here is where you should mainly work**.

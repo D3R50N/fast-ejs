@@ -84,6 +84,11 @@ module.exports = ${_js(baseConfig)};
   const tailwindOutput = path.dirname(configTailwindOutput());
   let imported = "";
   for (let style of config.tailwind.imports) {
+    const uri_regex = /^https?:\/\/[^\s/$.?#].[^\s]*$/i;
+    if (uri_regex.test(style)) {
+      imported += `@import "${style}";\n`;
+      continue;
+    }
     const style_path = _p(`${config.build.output}/${style}`);
     const relative_path = path.relative(tailwindOutput, style_path);
     imported += `@import "./${relative_path}";\n`;

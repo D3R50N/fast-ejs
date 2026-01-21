@@ -155,8 +155,12 @@ async function ejsbuild(code = 0) {
             );
             return comp_render;
           } catch (error) {
-            _d(`\x1b[31mFailed to build component '${component}'`);
-            console.log("\x1b[31m", error.message, "\x1b[0m");
+            if (config.components.autoGenerate) {
+              _ds("Missing component '", component, "' generated.");
+            } else {
+              _d(`\x1b[31mFailed to build component '${component}'`);
+              console.log("\x1b[31m", error.message, "\x1b[0m");
+            }
           }
         },
         $env: (k) => process.env[k],

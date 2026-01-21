@@ -62,6 +62,10 @@ async function getConfig() {
         "In which folder are your components ?",
         config.components.dir,
       );
+      config.components.autoGenerate = await $input(
+        "Auto generate missing components ?",
+        config.components.autoGenerate,
+      );
 
       config.build.output = await $input(
         "Where do you want to output ?",

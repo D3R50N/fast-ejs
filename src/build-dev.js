@@ -11,6 +11,7 @@ async function ejsbuild_dev() {
     config.components.dir,
     config.data.dir,
     ".env",
+    "tailwind.config.js",
   ];
 
   _d("Watching :", toWatch.map((d) => `'${d}'`).join(", "));
