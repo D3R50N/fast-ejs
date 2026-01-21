@@ -227,18 +227,18 @@ Remember that only components can access args data `$x`.
 
 ### Passing data to pages
 
-#### 1. With base data
+#### 1. Using base data
 
 Fast EJS comes with default data that can't be overrided.
 
-- `$` : _function_
+- `$` : _function_\
   Imports a component by its name. Like a 'super include'.
 
   ```ejs
   <%- $("users/avatar","https://placehold.co/400") %>
   ```
 
-- `$0`,`$1`,... :
+- `$0`,`$1`,... :\
   Return the args passed to a component. **Can be accessed only inside a component, not a page**.\
   In the previous example, we can access `"https://placehold.co/400"` by using `$0` (`0` for the first arg).
 
@@ -247,14 +247,14 @@ Fast EJS comes with default data that can't be overrided.
   <img src="<%= $0 %>" class="w-10 aspect-square rounded-full"/>
   ```
 
-- `$async` : _Promise function_
+- `$async` : _Promise function_\
   Asynchronously imports a component.
 
   ```ejs
   <%- await $async("dashboard") %>
   ```
 
-- `$route` :
+- `$route` :\
   Returns the current route relative to the `pages.dir`. In this example, it will return `/home`
 
   ```ejs
@@ -262,7 +262,7 @@ Fast EJS comes with default data that can't be overrided.
   <%= $route %>
   ```
 
-- `$css` :
+- `$css` :\
   Automatically imports the relative path of generated tailwind css from `tailwind.output` inside a page. No need to manually write the css path and change everytime.\
   \
   For example, inside `app/pages/users/profile.ejs`, it can return something like `../../public/app.css`\
@@ -272,7 +272,7 @@ Fast EJS comes with default data that can't be overrided.
   <%- $css %>
   ```
 
-- `$date` :
+- `$date` :\
   Returns a new Date object.\
   Stop writing year manually.
 
@@ -280,21 +280,21 @@ Fast EJS comes with default data that can't be overrided.
   <%= $date.getFullYear() %>
   ```
 
-- `$env` : _function_
+- `$env` : _function_\
   Get a env variable from `process.env`. Useful to build env based pages.
 
   ```ejs
   <%= $env("NODE_ENV") %>
   ```
 
-- `$cls` : _function_
+- `$cls` : _function_\
   Same behavior as `tailwind clsx`. Useful to write conditions based classes.
 
   ```ejs
   <%= $cls(isActive && "text-primary", "bg-gray-100") %>
   ```
 
-- `$if` : _function_
+- `$if` : _function_\
   Returns a value based on a condition or a default value if set. Can also works with components :=)
 
   ```ejs
@@ -302,7 +302,7 @@ Fast EJS comes with default data that can't be overrided.
   <%= $if($env("NODE_ENV")=="prod", "Hello","World") %>
   ```
 
-- `$debug` : _function_
+- `$debug` : _function_\
   Prints anything in the console during build. Use it to debug your pages or components
 
   ```ejs
@@ -317,11 +317,13 @@ Fast EJS comes with default data that can't be overrided.
   <%- $trim($upper(user.name)) %>
   ```
 
-Create data files in `data.dir`:
+#### 2. Using your own data
+
+Fill data files in `data.dir` (generated automatically if missing).
 
 - **Global data** : Can be accessed inside every pages and components
 
-If `data.allow` is `all` or `js`
+If `data.allow` is `all` or `js` (recommended)
 
 ```javascript
 // app/data/global.data.js
@@ -339,7 +341,7 @@ module.exports = {
 
 If `data.allow` is `all` or `json`
 
-```json
+```js
 // app/data/global.data.json
  {
   "siteName": "My Awesome Site",
@@ -348,25 +350,71 @@ If `data.allow` is `all` or `json`
     { "label": "About", "url": "/about" },
     { "label": "Contact", "url": "/contact" },
   ],
-};
+}
 ```
 
-- **Local data**
+- **Local data** : Can be accessed only in the target page
 
 ```javascript
-// app/pages/index.data.js
+// app/data/local.data.js
 module.exports = {
-  title: "Welcome to My Site",
-  description: "This is a fast-ejs powered website with Tailwind CSS.",
+  // for page "app/pages/users/profile.ejs"
+  "users/profile": {
+    title: "Welcome to My Site",
+    description: "This is a fast-ejs powered website with Tailwind CSS.",
+  },
 };
 ```
+
+**Note that all JS data can be asynchronous, and each asynchronous data will affect the build time.**
 
 ## Commands
 
 - **`fast-ejs dev`**: Start development server with live reloading
 - **`fast-ejs build`**: Build static files for production
 
+## How it works
+
+Here is the real building flow :
+
+- Get the data inside `data.dir` that match the `data.allow`.
+- Scan the specified `pages.dir`.
+  - All empty folder will be ignored
+  - If any `.ejs` file is found, render the html with the corresponding data and generate the right file inside `build.output` depending on `build.useIndexRouting`.
+  - For any other file, just copy it inside the `build.output`.
+- Generate the css with tailwind at `tailwind.output` along with `tailwind.imports` if specified.
+- Scan the `build.output` and clean all junk files and folders (files from previous build and empty folders).
+
+Notice that all empty folders inside `pages.dir` will be ignored in the build.
+
 ## Usage tips
+
+- **Prefer using JS data**
+
+By setting `data.allow` to `json`, you allow only json data. But in real case you'll mostly need js data because you can write logic inside.\
+By example, using this:
+
+```json
+{
+  "year": 2026
+}
+```
+
+is less effective that using:
+
+```js
+module.exports = {
+  year: new Date().getFullYear(),
+};
+```
+
+because in the second case, `year` can change at build time.\
+Also js data can be async which is useful to get data from a database. So prefer setting `data.allow` to `all` or `js` when you need dynamic data.
+
+- **Duplicate data**
+  - If `data.allow` is `all`, js data are prioritized over json data.
+    In the [previous example](#usage-tips), if `year` is in both js and json file, the js one will be used.
+  - You can't override base data. For example, declaring `$route` will have no effect.
 
 - **Don't misuse EJS tags**
 
@@ -381,9 +429,23 @@ Using `<%` means you're not expecting an output but `$("header")` should return 
 Using `<%=` means you're expecting an escaped value but `$css` requires to be unescaped.
 Using `<%-` means you're expecting an unescaped but `user.name` may return a string.
 
+- **Don't put components or data directory inside the pages directory**
+
+Any file inside the pages dir is considered a static file cause this directory is scanned to find ejs files and other files to generate an output.
+
+`pages.dir` contains files that will be built (ejs, images, css, etc..)
+`components.dir` contains parts of pages. Not pages.
+`data.dir` contains data that will be used by the pages.
+
+Therefore, adding components dir inside the pages dir, means components will be generated as pages and data dir files will be generated as static files.
+
 - **Fast EJS is a builder / generator. Not a framework**
 
-You're basiclally coding ejs templates with 'super powers', and something is generating the html and css files for you. You're not using a big framework that will run your SaaS.\
+Because of some features like access of the current route (`$route`) or usage of async data, you might think you're using a kind of framework. But no. You're basically coding ejs templates with 'super powers', and something is generating the html and css files for you.
+
+When someone visit your site, he will just see the static files early built. Even if some of your data are retrieved at build time, they can't change once the build is done.
+
+So, you're not using a big framework that will run your SaaS.\
 Please consider using this for small projects like static portfolios or landing pages.
 
 ## Contributing
