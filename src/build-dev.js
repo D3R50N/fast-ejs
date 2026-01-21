@@ -1,9 +1,11 @@
 const { args, _d, _p } = require("../core");
 const ejsbuild = require("../src/build");
 const nodemon = require("nodemon");
-const { config } = require("../core/lib");
+const { config, getConfig } = require("../core/lib");
 
 async function ejsbuild_dev() {
+  await getConfig();
+
   const toWatch = [
     config.pages.dir,
     config.components.dir,
@@ -12,7 +14,7 @@ async function ejsbuild_dev() {
   ];
 
   _d("Watching :", toWatch.map((d) => `'${d}'`).join(", "));
-  await ejsbuild(); // needs await to get config
+  ejsbuild(); // no more needs await
 
   nodemon({
     watch: toWatch.map(_p),
