@@ -228,9 +228,11 @@ async function ejsbuild(code = 0) {
 
   const junk = _tree(config.build.output).filter(
     (f) =>
+      !f.isDir &&
       f.fullpath != _p(configTailwindOutput()) &&
-      !built.find((b) => b.startsWith(f.fullpath)),
+      !built.find((b) => b == f.fullpath),
   );
+
   for (let file of junk) {
     fs.rmSync(file.fullpath, { force: true, recursive: true });
   }
