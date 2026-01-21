@@ -26,7 +26,6 @@ const _rd = (dirname) => {
       };
     });
   } catch (e) {
-    console.log(e);
     return [];
   }
 };
@@ -64,7 +63,6 @@ const _w = (pathname, data, force = false) => {
     fs.writeFileSync(_p(pathname), parsed, { encoding: "utf8" });
     return true;
   } catch (error) {
-    console.log(error);
     return false;
   }
 };
