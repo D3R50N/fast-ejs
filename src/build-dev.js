@@ -1,7 +1,7 @@
 const { args, _d, _p } = require("../core");
 const ejsbuild = require("../src/build");
 const nodemon = require("nodemon");
-const { config, getConfig } = require("../core/lib");
+const { config, getConfig, getConfigFile } = require("../core/lib");
 
 async function ejsbuild_dev() {
   await getConfig();
@@ -10,6 +10,7 @@ async function ejsbuild_dev() {
     config.pages.dir,
     config.components.dir,
     config.data.dir,
+    getConfigFile(),
     ".env",
     "tailwind.config.js",
   ];

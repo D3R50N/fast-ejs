@@ -48,7 +48,7 @@
       "properties": {
         "dir": {
           "default": "data",
-          "description": "The folder containing global and local data files (global.data.js/json, local.data.js/json)",
+          "description": "The folder containing global and local data files (global.js/json, local.js/json, route.js/json)",
           "type": "string"
         },
         "allow": {

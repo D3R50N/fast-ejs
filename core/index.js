@@ -72,6 +72,7 @@ const _r = (pathname, json = true) => {
     const data = fs.readFileSync(_p(pathname), { encoding: "utf8" });
     return json ? JSON.parse(data) : data;
   }
+  return null;
 };
 const _d = (...messages) => {
   let obj = "";
@@ -89,9 +90,13 @@ const _cp = (i, o) => fs.copyFileSync(_p(i), _p(o));
 
 const _has = (obj, k) => Object.hasOwn(obj, k);
 
+const _v = async (v, ...args) =>
+  typeof v === "function" ? await v(...args) : v;
+
 module.exports = {
   _ce,
   _cp,
+
   _d,
   _ds,
   _e,
@@ -104,6 +109,7 @@ module.exports = {
   _rd,
   _tree,
   _name,
+  _v,
   _w,
   args,
   root,

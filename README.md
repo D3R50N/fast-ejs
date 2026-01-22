@@ -329,7 +329,7 @@ Fill data files in `data.dir` (generated automatically if missing).
 If `data.allow` is `all` or `js` (recommended)
 
 ```javascript
-// data/global.data.js
+// data/global.js
 module.exports = {
   siteName: "My Awesome Site",
   navItems: [
@@ -345,7 +345,7 @@ module.exports = {
 If `data.allow` is `all` or `json`
 
 ```js
-// data/global.data.json
+// data/global.json
  {
   "siteName": "My Awesome Site",
   "navItems": [
@@ -359,7 +359,7 @@ If `data.allow` is `all` or `json`
 - **Local data** : Can be accessed only in the target page
 
 ```javascript
-// data/local.data.js
+// data/local.js
 module.exports = {
   // for page "pages/users/profile.ejs"
   "users/profile": {

@@ -1,4 +1,4 @@
-const { args, _r, _has, _ce, _d, _w, _md, _e, _p, _ds } = require(".");
+const { args, _r, _has, _ce, _d, _w, _md, _e, _p, _ds, _v } = require(".");
 const { $confirm, $input, $select, $number } = require("./prompter");
 const default_fej = require("../fast.ejs.json");
 const config = {
@@ -14,6 +14,7 @@ function getConfigFile() {
       if (v) return v;
     }
   }
+  return "fast.ejs.json";
 }
 
 function smartMerge(target = {}, source = {}) {
@@ -45,7 +46,7 @@ function smartMerge(target = {}, source = {}) {
 }
 
 async function getConfig() {
-  const file = getConfigFile() || "fast.ejs.json";
+  const file = getConfigFile();
 
   if (!_ce(file, "Config file")) {
     const auto = await $confirm("Do you want to use default settings ?", true);
@@ -120,14 +121,18 @@ function generateBaseDirs() {
 }
 
 async function getDatas() {
-  const globalDataPath = (type) => `${config.data.dir}/global.data.${type}`;
-  const localDataPath = (type) => `${config.data.dir}/local.data.${type}`;
+  const globalDataPath = (type) => `${config.data.dir}/global.${type}`;
+  const localDataPath = (type) => `${config.data.dir}/local.${type}`;
+  const routeDataPath = (type) => `${config.data.dir}/route.${type}`;
 
   const globalJs = globalDataPath("js");
   const globalJson = globalDataPath("json");
 
   const localJs = localDataPath("js");
   const localJson = localDataPath("json");
+
+  const routeJs = routeDataPath("js");
+  const routeJson = routeDataPath("json");
 
   const templates = {
     globalJS: `
@@ -146,6 +151,14 @@ module.exports = () => ({
   "contact/menu": {}, // contact/menu.ejs
 });
 `,
+    routeJS: `
+module.exports = {
+  "blog/$id": [
+    { id: 123, title: "Article 1" },
+    { id: 456, title: "Article 2", isPremium: true },
+  ],
+};
+`,
   };
 
   const default_data_args = {};
@@ -154,14 +167,13 @@ module.exports = () => ({
     const resolved = require.resolve(_p(path));
     delete require.cache[resolved];
     const v = require(resolved);
-    return typeof v == "function" ? await v(default_data_args) : v;
+    return await _v(v, default_data_args);
   };
 
   const getGlobalJSData = async () => {
     if (_e(globalJs)) {
       return await parseJSDate(globalJs);
     } else {
-      _d(`Global file '${globalJs}' not found. It will be generated`);
       _w(globalJs, templates.globalJS.trim());
       return {};
     }
@@ -171,8 +183,16 @@ module.exports = () => ({
     if (_e(localJs)) {
       return await parseJSDate(localJs);
     } else {
-      _d(`Local file '${localJs}' not found. It will be generated`);
       _w(localJs, templates.localJS.trim());
+      return {};
+    }
+  };
+
+  const getRouteJSData = async () => {
+    if (_e(routeJs)) {
+      return await parseJSDate(routeJs);
+    } else {
+      _w(routeJs, templates.routeJS.trim());
       return {};
     }
   };
@@ -181,8 +201,6 @@ module.exports = () => ({
     if (_e(globalJson)) {
       return _r(globalJson);
     } else {
-      _d(`Global file '${globalJson}' not found. It will be generated`);
-      _w(globalJson, {});
       return {};
     }
   };
@@ -191,31 +209,40 @@ module.exports = () => ({
     if (_e(localJson)) {
       return _r(localJson);
     } else {
-      _d(`Local file '${localJson}' not found. It will be generated`);
-      _w(localJson, { index: { title: "HomePage" }, about: {} });
+      return {};
+    }
+  };
+
+  const getRouteJSONData = () => {
+    if (_e(routeJson)) {
+      return _r(routeJson);
+    } else {
       return {};
     }
   };
 
   let globalData = {},
-    localData = {};
-
+    localData = {},
+    routeData = {};
   switch (config.data.allow) {
     case "js":
       globalData = await getGlobalJSData();
       localData = await getLocalJSData();
+      routeData = await getRouteJSData();
       break;
     case "json":
       globalData = getGlobalJSONData();
       localData = getLocalJSONData();
+      routeData = getRouteJSONData();
       break;
     default:
       globalData = { ...getGlobalJSONData(), ...(await getGlobalJSData()) };
       localData = { ...getLocalJSONData(), ...(await getLocalJSData()) };
+      routeData = { ...getRouteJSONData(), ...(await getRouteJSData()) };
       break;
   }
 
-  return { globalData, localData };
+  return { globalData, localData, routeData };
 }
 
 const configTailwindOutput = () => {

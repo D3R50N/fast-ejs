@@ -18,6 +18,7 @@ const {
   _w,
   _ds,
   _cp,
+  _v,
 } = require("../core");
 const {
   getConfig,
@@ -40,7 +41,7 @@ async function ejsbuild(code = 0) {
   const start = new Date();
 
   generateBaseDirs();
-  const { globalData, localData } = await getDatas();
+  const { globalData, localData, routeData } = await getDatas();
 
   /** @param {File } file */
   function getOutputName(file) {
@@ -91,16 +92,18 @@ async function ejsbuild(code = 0) {
       return;
     }
     output += ".html";
+
+    console.log(localData);
     try {
       const data = {
         ...globalData,
-        ...(localData[outputName.original] ?? {}),
+        ...((await _v(localData[outputName.original], {})) ?? {}),
       };
 
       const getComponent = (component, ...args) => {
         if (!component.endsWith(".ejs")) component += ".ejs";
         const content = _r(`${config.components.dir}/${component}`, false);
-        if (!content) throw new Error("Component not found.");
+        if (content == null) throw new Error("Component not found.");
         const component_data = {};
         for (let i in args) {
           component_data[`$${i}`] = args[i];
@@ -108,6 +111,18 @@ async function ejsbuild(code = 0) {
 
         return { content, component_data };
       };
+
+      const handleComponentError = (component, error) => {
+        if (config.components.autoGenerate) {
+          _md(config.components.dir + `/${component}`, false);
+          _w(config.components.dir + `/${component}.ejs`, "", false);
+          _ds(`Missing component '${component}' generated.`);
+        } else {
+          _d(`\x1b[31mFailed to build component '${component}'`);
+          console.log("\x1b[31m", error.message, "\x1b[0m");
+        }
+      };
+
       // NOTE - Reserved keywords
       const context = (d = {}) =>
         new Proxy(d, {
@@ -134,8 +149,7 @@ async function ejsbuild(code = 0) {
             );
             return comp_render;
           } catch (error) {
-            _d(`\x1b[31mFailed to build component '${component}'`);
-            console.log("\x1b[31m", error.message, "\x1b[0m");
+            handleComponentError(component, error);
           }
         },
         $async: async (component, ...args) => {
@@ -155,12 +169,7 @@ async function ejsbuild(code = 0) {
             );
             return comp_render;
           } catch (error) {
-            if (config.components.autoGenerate) {
-              _ds("Missing component '", component, "' generated.");
-            } else {
-              _d(`\x1b[31mFailed to build component '${component}'`);
-              console.log("\x1b[31m", error.message, "\x1b[0m");
-            }
+            handleComponentError(component, error);
           }
         },
         $env: (k) => process.env[k],
