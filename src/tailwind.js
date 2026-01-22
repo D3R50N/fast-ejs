@@ -3,7 +3,7 @@ const path = require("path");
 const postcss = require("postcss");
 const tailwindcss = require("tailwindcss");
 const autoprefixer = require("autoprefixer");
-const { _p, _e, _w, _js, _ce } = require("../core");
+const { _p, _e, _w, _js, _ce, _r } = require("../core");
 const { config, configTailwindOutput } = require("../core/lib");
 
 const twConfigPath = "tailwind.config.js";
@@ -39,6 +39,24 @@ function mergeTailwindConfig(base, user) {
 
     plugins: [...(base.plugins || []), ...(user.plugins || [])],
   };
+}
+
+function extractLayers(path) {
+  const css = _r(path, false);
+  if (!css) return {};
+  const regex = /@layer\s+([a-zA-Z0-9_-]+)\s*\{([\s\S]*?\})\s*\}/g;
+  const result = {};
+  let match;
+
+  while ((match = regex.exec(css)) !== null) {
+    const name = match[1];
+    const content = match[2].trim();
+
+    result[name] ??= [];
+    result[name].push(content);
+  }
+
+  return result;
 }
 
 async function buildTailwind() {
@@ -83,6 +101,7 @@ module.exports = ${_js(baseConfig)};
   let css = fs.readFileSync(inputCss, "utf8");
   const tailwindOutput = path.dirname(configTailwindOutput());
   let imported = "";
+  const layers = {};
   for (let style of config.tailwind.imports) {
     const uri_regex = /^https?:\/\/[^\s/$.?#].[^\s]*$/i;
     if (uri_regex.test(style)) {
@@ -92,8 +111,23 @@ module.exports = ${_js(baseConfig)};
     const style_path = _p(`${config.build.output}/${style}`);
     const relative_path = path.relative(tailwindOutput, style_path);
     imported += `@import "./${relative_path}";\n`;
+
+    const lay = extractLayers(`${config.pages.dir}/${style}`);
+    for (let k in lay) {
+      layers[k] ??= "";
+      layers[k] += `${lay[k]}\n`;
+    }
   }
+
   css = `${imported}\n${css}`;
+
+  for (let k in layers) {
+    css += `
+@layer ${k} {
+    ${layers[k]?.trim()}
+}
+`;
+  }
 
   const result = await postcss([
     tailwindcss(finalConfig),

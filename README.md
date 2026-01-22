@@ -159,7 +159,7 @@ The `fast.ejs.json` (occasionnally called _the FEJ_) file controls all aspects o
 - **`data.allow`**: Data file format (`"js"`, `"json"`, or `"all"`)
 - **`pages.dir`**: Directory containing your EJS page templates. **Here is where you should mainly work**.
 - **`tailwind.output`**: Path to generated Tailwind CSS file
-- **`tailwind.imports`**: Array of external CSS URLs to include
+- **`tailwind.imports`**: Array of external CSS URLs to include. Each `@layer` will be detected if specified.
 
 ## Usage Examples
 
@@ -405,6 +405,37 @@ module.exports = {
 
 **Note that all JS data can be asynchronous, and each asynchronous data will affect the build time.**
 
+## Use cases
+
+You can use fast-ejs to build any static website. Just keep in mind that all pages are pre-built, not in runtime like front-end frameworks.\
+For example, if you want to create a blog, you have to use dynamic routes (ex: `articles/$id.ejs`) in order to generate each article page at once:
+
+```js
+// - Create "articles/$id.ejs" with the logic
+// - Inside "data/route.js", add all articles with their data
+module.exports = {
+  // ...,
+  "articles/$id": async () => {
+    const list = await db.getArticles();
+    return list.map((a) => ({ ...a, id: a._id })); // ensure "id" key
+  },
+};
+
+// - Add your view data inside "data/local.js"
+module.exports = {
+  // ...,
+  "articles/$id": (article /*represents the data from route.js*/) => {
+    const { name, date } = article;
+    return { name, date }; // if only name and date are used in the view
+  },
+};
+
+/** Then, when the build is done, route.js will generate files based on your list. And each files built with the corresponding data.
+ * /articles/1 (retrieve data "articles/$id" but with the article with id=1 )
+ * etc..
+ */
+```
+
 ## Commands
 
 - **`fast-ejs dev`**: Start development server with live reloading
@@ -417,7 +448,10 @@ Here is the real building flow :
 - Get the data inside `data.dir` that match the `data.allow`.
 - Scan the specified `pages.dir`.
   - All empty folder will be ignored
-  - If any `.ejs` file is found, render the html with the corresponding data and generate the right file inside `build.output` depending on `build.useIndexRouting`.
+  - If any `.ejs` file is found, search for used component inside `components.dir`.
+    - If a component is missing, it will be generated if `components.autoGenerate` is `true`
+    - If the file it is dynamic file (ex: $id.ejs), search for corresponding routes inside `data.dir/route.js(json)`
+  - Render the html with the corresponding data and generate the right file inside `build.output` depending on `build.useIndexRouting`.
   - For any other file, just copy it inside the `build.output`.
 - Generate the css with tailwind at `tailwind.output` along with `tailwind.imports` if specified.
 - Scan the `build.output` and clean all junk files and folders (files from previous build and empty folders).
