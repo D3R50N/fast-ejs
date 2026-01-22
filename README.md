@@ -322,7 +322,8 @@ Fast EJS comes with default data that can't be overrided.
 
 #### 2. Using your own data
 
-Fill data files in `data.dir` (generated automatically if missing).
+Fill data files in `data.dir` (generated automatically if missing).\
+Remember that using js data allow you to use function, async function and getter as data.
 
 - **Global data** : Can be accessed inside every pages and components
 
@@ -339,6 +340,9 @@ module.exports = {
   ],
   add: (a, b) => a + b,
   getUsers: async () => await db.getUsers(),
+  get randomBool() {
+    return Math.random() > 0.5;
+  },
 };
 ```
 
@@ -365,6 +369,36 @@ module.exports = {
   "users/profile": {
     title: "Welcome to My Site",
     description: "This is a fast-ejs powered website with Tailwind CSS.",
+  },
+
+  // dynamic routes
+  "user/$id": (params) => ({
+    id: params.id,
+    username: params.name,
+  }),
+  "blog/$id": ({ title, id }) => ({
+    id,
+    blogTitle: title,
+  }),
+};
+```
+
+- **Route params** : Params sent to dynamic routes. Should return an array of object
+
+```javascript
+// data/route.js
+module.exports = {
+  "user/$id": [{ id: "u1", name: "John Doe" }],
+  "blog/$id": () => {
+    const arr = [];
+    for (let i = 0; i < 5; i++) {
+      arr.push({ title: "Article " + i, id: i, isPremium: i % 2 == 0 });
+    }
+    return arr;
+  },
+  // or getter
+  get "blog/$id"() {
+    // ...
   },
 };
 ```

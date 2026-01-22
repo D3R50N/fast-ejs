@@ -62,6 +62,13 @@ async function ejsbuild(code = 0) {
     return { normalized, original };
   }
 
+  const params_regex = /\$([a-zA-Z_]\w*)\b/g;
+  function fillParams(s = "", p = {}) {
+    return s.replace(params_regex, (_, key) => {
+      return p[key] ?? `$${key}`;
+    });
+  }
+
   // generate tailwind file only if detected any view
   if (
     _tree(config.pages.dir).filter((f) => !f.isDir && f.ext == "ejs").length > 0
@@ -75,7 +82,7 @@ async function ejsbuild(code = 0) {
   const built = [];
 
   /** @param {File } file */
-  async function writeFile(file) {
+  async function writeFile(file, templatePath, templateData) {
     const outputName = getOutputName(file);
     const hasConflict = !!allOutputNames.find(
       (f) => f.original == outputName.normalized,
@@ -92,12 +99,51 @@ async function ejsbuild(code = 0) {
       return;
     }
     output += ".html";
+    const routeParams = outputName.original.match(params_regex) ?? [];
 
-    console.log(localData);
+    const hasParams = routeParams.length > 0;
+
+    const local =
+      localData[outputName.original] ?? localData[`/${outputName.original}`];
+
+    if (hasParams) {
+      const routes = await _v(
+        routeData[outputName.original] ?? routeData[`/${outputName.original}`],
+      );
+      if (typeof routes == "object") {
+        const params = Array.isArray(routes) ? routes : [routes];
+        for (let p of params) {
+          const fill = (s) => fillParams(s, p);
+          const pf = {
+            name: fill(file.name),
+            fullpath: fill(file.fullpath),
+            path: fill(file.path),
+            isDir: file.isDir,
+            ext: file.ext,
+          };
+
+          const notFoundParams = [
+            ...(pf.fullpath.matchAll(params_regex) ?? []),
+          ].map((m) => m[1]);
+          if (notFoundParams.length > 0) {
+            _d(
+              `\x1b[31m${notFoundParams.map((p) => `'${p}'`).join(", ")} not found for route '${outputName.original}'`,
+            );
+            continue;
+          }
+
+          writeFile(pf, file.fullpath, await _v(local, p));
+        }
+      }
+
+      return;
+    }
+
     try {
       const data = {
         ...globalData,
-        ...((await _v(localData[outputName.original], {})) ?? {}),
+        ...((await _v(local, {})) ?? {}),
+        ...(templateData ?? {}),
       };
 
       const getComponent = (component, ...args) => {
@@ -200,8 +246,9 @@ async function ejsbuild(code = 0) {
           return new Date();
         },
       };
+      // const fileContent = _r(file.fullpath, false);
       const out = await ejs.renderFile(
-        file.fullpath,
+        templatePath ?? file.fullpath,
         context({
           ...data,
           ...defaultData,

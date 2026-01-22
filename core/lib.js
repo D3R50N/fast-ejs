@@ -147,8 +147,15 @@ module.exports = () => ({
   index: {
     title: process.env.APP_NAME,
   },
-  about: {}, // about.ejs,
   "contact/menu": {}, // contact/menu.ejs
+
+  "blog/$id": (params) => ({
+    blogId: params.id,
+  }), // blog/$id.ejs
+
+  "article/$name": ({ name }) => ({
+    name,
+  }), // blog/$id.ejs
 });
 `,
     routeJS: `
