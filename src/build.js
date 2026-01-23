@@ -159,7 +159,10 @@ async function ejsbuild(code = 0) {
       };
 
       const handleComponentError = (component, error) => {
-        if (config.components.autoGenerate) {
+        if (
+          !_e(config.components.dir + `/${component}.ejs`) &&
+          config.components.autoGenerate
+        ) {
           _md(config.components.dir + `/${component}`, false);
           _w(config.components.dir + `/${component}.ejs`, "", false);
           _ds(`Missing component '${component}' generated.`);
